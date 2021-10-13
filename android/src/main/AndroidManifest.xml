@@ -1,0 +1,3 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="scanbot.sdk.flutter.demo.flutter_ffi_demo">
+</manifest>

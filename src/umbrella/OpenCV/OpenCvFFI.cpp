@@ -2,26 +2,47 @@
 #include <Utils/MatUtils.h>
 #include "OpenCvFFI.h"
 #include "opencv2/face.hpp"
-#include "FaceDetector/FaceDetector.h"
+#include "ShapeDetector/ShapeDetector.h"
 
 #define EXPORTED __attribute__((visibility("default"))) __attribute__((used))
 
-static flutter::FaceRect *mapFaceRectFFiResultStruct(const std::vector<cv::Rect> &faceRectandles);
+static flutter::Shape *mapShapesFFiResultStruct(const std::vector<ShapeDetector::Shape> &shapes);
+
+static flutter::Point *mapPointsFFiResultStruct(const std::vector<ShapeDetector::Point> &points);
 
 #ifdef __cplusplus
 
-static flutter::FaceRect *mapFaceRectFFiResultStruct(const std::vector<cv::Rect> &faceRectandles) {
-    flutter::FaceRect *first = nullptr;
-    flutter::FaceRect *previous = nullptr;
-    int size = faceRectandles.size();
+static flutter::Shape *mapShapesFFiResultStruct(const std::vector<ShapeDetector::Shape> &shapes) {
+    flutter::Shape *first = nullptr;
+    flutter::Shape *previous = nullptr;
+    int size = shapes.size();
     for (int i = size - 1; i >= 0; --i) {
-        auto face = faceRectandles[i];
-        auto *ffiAllocated = (struct flutter::FaceRect *) malloc(
-                sizeof(struct flutter::FaceRect));
-        ffiAllocated->left = face.x;
-        ffiAllocated->top = face.y;
-        ffiAllocated->right = face.x + face.width;
-        ffiAllocated->bottom = face.y + face.height;
+        auto shape = shapes[i];
+        auto *ffiAllocated = (struct flutter::Shape *) malloc(
+                sizeof(struct flutter::Shape));
+
+        ffiAllocated->figureType = shape.figureType;
+        ffiAllocated->point = mapPointsFFiResultStruct(shape.points);
+        ffiAllocated->next = previous;
+        if (i == 0) {
+            first = ffiAllocated;
+        }
+        previous = ffiAllocated;
+    }
+    return first;
+}
+
+static flutter::Point *mapPointsFFiResultStruct(const std::vector<ShapeDetector::Point> &points) {
+    flutter::Point *first = nullptr;
+    flutter::Point *previous = nullptr;
+    int size = points.size();
+    for (int i = size - 1; i >= 0; --i) {
+        auto point = points[i];
+        auto *ffiAllocated = (struct flutter::Point *) malloc(
+                sizeof(struct flutter::Point));
+
+        ffiAllocated->x = point.x;
+        ffiAllocated->y = point.y;
         ffiAllocated->next = previous;
         if (i == 0) {
             first = ffiAllocated;
@@ -34,20 +55,36 @@ static flutter::FaceRect *mapFaceRectFFiResultStruct(const std::vector<cv::Rect>
 extern "C" {
 #endif
 
-flutter::FaceRect *processFrame(void *scanner, cv::Mat *image) {
-    auto faceRectandles = ((FaceDetector *) scanner)->detect_face_rectangles(*image);
-    //todo we need to map result as a linked list of items to return multiple result
-    flutter::FaceRect *first = mapFaceRectFFiResultStruct(faceRectandles);
+flutter::Shape *processFrame(ShapeDetector *scanner, flutter::ImageForDetect *image) {
+    auto img = flutter::prepareMat(image);
+    auto shapes = scanner->detectShapes(img);
+    //we need to map result as a linked list of items to return multiple result
+    flutter::Shape *first = mapShapesFFiResultStruct(shapes);
     return first;
 }
-void *initDetector(const char *faceDetectionConfiguration,
-                   const char *faceDetectionWeights) {
-    auto *scanner = new FaceDetector(faceDetectionConfiguration, faceDetectionWeights);
+
+flutter::Shape *processFrameWithRoi(ShapeDetector *scanner, flutter::ImageForDetect *image, int areaLeft,
+                    int areaTop, int areaRight, int areaBottom) {
+    auto areaWidth = areaRight - areaLeft;
+    auto areaHeight = areaBottom - areaTop;
+    auto img = flutter::prepareMat(image);
+    if (areaLeft >= 0 && areaTop >= 0 && areaWidth > 0 && areaHeight > 0) {
+        cv::Rect mrzRoi(areaLeft, areaTop, areaWidth, areaHeight);
+        img = img(mrzRoi);
+    }
+    auto shapes = scanner->detectShapes(img);
+    //we need to map result as a linked list of items to return multiple result
+    flutter::Shape *first = mapShapesFFiResultStruct(shapes);
+    return first;
+}
+
+ShapeDetector *initDetector() {
+    auto *scanner = new ShapeDetector();
     return scanner;
 }
 
 void deinitDetector(void *scanner) {
-    delete (FaceDetector *) scanner;
+    delete (ShapeDetector *) scanner;
 }
 
 #ifdef __cplusplus

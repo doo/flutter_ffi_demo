@@ -15,6 +15,7 @@ set(openssl ${CMAKE_CURRENT_SOURCE_DIR}/android/openssl)
 set(opencv ${CMAKE_CURRENT_SOURCE_DIR}/android/opencv-build/opencv-${OPENCV_VERSION}-android/sdk/native/jni) ## need to be precompiled!!
 set(umbrella ${CMAKE_CURRENT_SOURCE_DIR}/umbrella)
 set(opencv_includes ${CMAKE_CURRENT_SOURCE_DIR}/opencv/${ANDROID_ABI})
+set(open_jpeg ${CMAKE_CURRENT_SOURCE_DIR}/android/opencv-build/openjpeg-install-${ANDROID_ABI}/lib/openjpeg-2.3)
 
 include(ExternalProject)
 find_library(log-lib log) #add android logging
@@ -31,13 +32,25 @@ set_property(TARGET OpenSSL PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${openssl}/i
 set_property(TARGET OpenSSL PROPERTY INTERFACE_LINK_DIRECTORIES "${openssl}/lib/${ANDROID_ABI}")
 set_property(TARGET OpenSSL PROPERTY INTERFACE_LINK_LIBRARIES crypto ssl)
 
-set(OpenCV_DIR ${opencv})
-find_package(OpenCV REQUIRED HINTS ${opencv})
-set(CMAKE_CXX_STANDARD 17) #set c++ language standart
+###### Open SSL
+#add_library(OpenJpeg INTERFACE)
+#add_dependencies(OpenJpeg ${open_jpeg})
+#set_property(TARGET OpenJpeg PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${open_jpeg}/include/openjpeg-2.3")
+#set_property(TARGET OpenJpeg PROPERTY INTERFACE_LINK_DIRECTORIES "${open_jpeg}/lib/")
+#set_property(TARGET OpenJpeg PROPERTY INTERFACE_LINK_LIBRARIES openjp2)
 
+message("open-jpeg ${open_jpeg}")
+#OpenCV
+set(OpenCV_DIR ${opencv})
+set(OpenJPEG_DIR ${open_jpeg})
+find_package(OpenJPEG REQUIRED HINTS ${open_jpeg})
+find_package(OpenCV REQUIRED HINTS ${opencv})
+
+set(CMAKE_CXX_STANDARD 17) #set c++ language standart
 set(FLUTTER_UMBRELLA
 	${umbrella}/OpenCV/OpenCvFFI.cpp
 	${umbrella}/FaceDetector/FaceDetector.cpp
+	${umbrella}/ShapeDetector/ShapeDetector.cpp
 )
 
 ###Build a shared library with our umbrella clases and opencv
@@ -57,6 +70,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
+	${OPENJPEG_LIBRARIES}
 	${OpenCV_LIBS}
     OpenSSL
 	${log-lib}

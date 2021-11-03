@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:ffi/ffi.dart';
@@ -118,4 +119,11 @@ extension SdkImagePoinerExtention on Pointer<SdkImage> {
     }
     malloc.free(this);
   }
+}
+
+extension ByteDataToFile on ByteData {
+    Future<void> save(File file) async{
+      List<int> bytes = buffer.asUint8List(offsetInBytes, lengthInBytes);
+      await file.writeAsBytes(bytes);
+    }
 }

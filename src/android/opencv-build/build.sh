@@ -30,11 +30,11 @@ do
     temp_build_dir="${WD}/cmake-build-opencv-${ANDROID_ABI}"
     rm -rf "${temp_build_dir}" && mkdir -p "${temp_build_dir}"
 
-    OPENJPEG_INSTALLDIR="${temp_build_dir}/openjpeg-install"
+    OPENJPEG_INSTALLDIR="${WD}/openjpeg-install-${ANDROID_ABI}"
     INSTALLDIR="$OPENJPEG_INSTALLDIR" ANDROID_ABI="$ANDROID_ABI" API_LEVEL="$API_LEVEL" ./build-openjpeg.sh
 
     pushd "${temp_build_dir}"
-    cmake -D CMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+    /usr/local/bin/cmake -D CMAKE_BUILD_WITH_INSTALL_RPATH=ON \
             -D CMAKE_TOOLCHAIN_FILE=${NDK_ROOT}/build/cmake/android.toolchain.cmake \
             -D ANDROID_NDK="${NDK_ROOT}" \
             -D ANDROID_NATIVE_API_LEVEL=${API_LEVEL} \

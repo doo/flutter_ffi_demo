@@ -5,26 +5,29 @@ import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 import '../camera_preview.dart';
 
 class FrameLiveProcessing<T> extends StatefulWidget {
   final FrameHandler<T> handler;
+  final AspectRatioFinderConfig? aspectRatioFinderConfig;
 
-
-  const FrameLiveProcessing({Key? key, required this.handler })
+  const FrameLiveProcessing(
+      {Key? key, required this.handler, this.aspectRatioFinderConfig})
       : super(key: key);
 
   @override
   _FrameLiveProcessingState createState() =>
-      _FrameLiveProcessingState(handler );
+      _FrameLiveProcessingState(handler, aspectRatioFinderConfig);
 }
 
 class _FrameLiveProcessingState<T> extends State<FrameLiveProcessing> {
   final FrameHandler<T> handler;
   bool permissionGranted = false;
   CameraController? controller;
+  AspectRatioFinderConfig? aspectRatioFinderConfig;
 
-  _FrameLiveProcessingState(this.handler);
+  _FrameLiveProcessingState(this.handler, this.aspectRatioFinderConfig);
 
   @override
   void initState() {
@@ -40,6 +43,8 @@ class _FrameLiveProcessingState<T> extends State<FrameLiveProcessing> {
 
   @override
   void dispose() {
+    controller?.dispose();
+    controller = null;
     super.dispose();
   }
 
@@ -64,8 +69,8 @@ class _FrameLiveProcessingState<T> extends State<FrameLiveProcessing> {
             final cameraData = data[0];
             if (cameraData != null) {
               controller ??= CameraController(
-                    cameraData, ResolutionPreset.ultraHigh,
-                    imageFormatGroup: ImageFormatGroup.yuv420);
+                  cameraData, ResolutionPreset.max,
+                  imageFormatGroup: ImageFormatGroup.yuv420);
 
               return ScanbotCameraWidget(const Key('Camera'), controller!,
                  // finderConfig:
@@ -85,7 +90,6 @@ class _FrameLiveProcessingState<T> extends State<FrameLiveProcessing> {
 
     return cameraPlaceholder;
   }
-
 }
 
 abstract class ResultOverlay<T> extends StatefulWidget {
@@ -93,5 +97,3 @@ abstract class ResultOverlay<T> extends StatefulWidget {
 
   const ResultOverlay({Key? key}) : super(key: key);
 }
-
-

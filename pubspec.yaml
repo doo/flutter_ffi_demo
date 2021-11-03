@@ -4,13 +4,17 @@ version: 0.0.1
 homepage:
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
   flutter: ">=1.20.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
+  camera: 0.9.4+1
+  permission_handler: ^8.2.0
+  logging: ^1.0.2
+  ffi: ^1.1.2
+  path_provider: ^2.0.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -25,6 +29,7 @@ flutter:
   # The 'pluginClass' and Android 'package' identifiers should not ordinarily
   # be modified. They are used by the tooling to maintain consistency when
   # adding or updating assets for this project.
+  #assets:
   plugin:
     platforms:
       android:

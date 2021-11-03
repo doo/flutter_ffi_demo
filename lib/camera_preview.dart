@@ -66,6 +66,7 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
   @override
   void initState() {
     super.initState();
+
     controller.initialize().then((_) {
       setState(() {
         _initialised = true;
@@ -74,6 +75,7 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
         return;
       }
       if (detectHandler != null) {
+
         controller.startImageStream((image) {
           if (!_isDetecting && this.mounted) {
             callFrameDetection(image, finder);
@@ -87,7 +89,9 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
     try {
       _isDetecting = true;
       Rect? roi;
-      const rotation = 0;
+      const rotation =
+          90; // here is degrees of how frame that comes from the camera is differs from device rotation clockwise
+      // need to be calculated properly, but it doesnt come from camera plugin
       if (finder is AspectRatioFinderConfig) {
         roi = calculateRoiFromAspectRatio(image, finder, rotation);
       }
@@ -100,8 +104,8 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
     }
   }
 
-  Rect calculateRoiFromAspectRatio(CameraImage image,
-      AspectRatioFinderConfig finder, int rotation) {
+  Rect calculateRoiFromAspectRatio(
+      CameraImage image, AspectRatioFinderConfig finder, int rotation) {
     var width = image.width;
     var height = image.height;
     if (rotation == 90 || rotation == 270) {
@@ -131,9 +135,7 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
     }
     final camera = controller.value;
     // fetch screen size
-    final size = MediaQuery
-        .of(context)
-        .size;
+    final size = MediaQuery.of(context).size;
 
     // calculate scale depending on screen and camera ratios
     // this is actually size.aspectRatio / (1 / camera.aspectRatio)
@@ -161,14 +163,13 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
     );
   }
 
-  Widget getAspectRatioDebugOverlay(Size size,
-      AspectRatioFinderConfig config,) {
-    var height = size.width * config.aspectRatio;
-    var width = size.width;
+  Widget getAspectRatioDebugOverlay(
+    Size size,
+    AspectRatioFinderConfig config,
+  ) {
     return Center(
-      child: SizedBox(
-        width: width,
-        height: height,
+      child: AspectRatio(
+        aspectRatio: config.aspectRatio,
         child: Container(
           color: Colors.black.withAlpha(50),
         ),

@@ -34,7 +34,7 @@ do
     INSTALLDIR="$OPENJPEG_INSTALLDIR" ANDROID_ABI="$ANDROID_ABI" API_LEVEL="$API_LEVEL" ./build-openjpeg.sh
 
     pushd "${temp_build_dir}"
-    /usr/local/bin/cmake -D CMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+    cmake -D CMAKE_BUILD_WITH_INSTALL_RPATH=ON \
             -D CMAKE_TOOLCHAIN_FILE=${NDK_ROOT}/build/cmake/android.toolchain.cmake \
             -D ANDROID_NDK="${NDK_ROOT}" \
             -D ANDROID_NATIVE_API_LEVEL=${API_LEVEL} \

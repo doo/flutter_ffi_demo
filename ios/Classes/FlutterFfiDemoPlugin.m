@@ -7,9 +7,9 @@
 // https://forums.swift.org/t/swift-static-libraries-dont-copy-generated-objective-c-header/19816
 #import "flutter_ffi_demo-Swift.h"
 #endif
-
 @implementation FlutterFfiDemoPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   [SwiftFlutterFfiDemoPlugin registerWithRegistrar:registrar];
+    
 }
 @end

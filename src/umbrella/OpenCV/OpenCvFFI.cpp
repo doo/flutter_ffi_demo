@@ -1,7 +1,6 @@
 //#include "../Utils/MatUtils.h"
-#include <Utils/MatUtils.h>
+#include "Utils/MatUtils.h"
 #include "OpenCvFFI.h"
-#include "opencv2/face.hpp"
 #include "ShapeDetector/ShapeDetector.h"
 
 #define EXPORTED __attribute__((visibility("default"))) __attribute__((used))

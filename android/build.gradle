@@ -48,14 +48,14 @@ android {
             cmake {
                 arguments "-DANDROID_STL=c++_shared",
                         "-DANDROID_TOOLCHAIN=clang",
-                        "-DCMAKE_BUILD_TYPE:=Release"
+                        "-DCMAKE_BUILD_TYPE:=Release" //Use Debug for proper debugging of native code
             }
         }
     }
     //for debug
     externalNativeBuild {
         cmake {
-            path file('../src/CMakeLists.txt')
+            path file('../src/android/CMakeLists.txt')
             version '3.21.2'
         }
     }

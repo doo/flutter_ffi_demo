@@ -28,7 +28,7 @@ temp_build_dir="cmake-build-openjpeg-${ANDROID_ABI}"
 rm -rf "${temp_build_dir}" && mkdir -p "${temp_build_dir}"
 pushd "${temp_build_dir}"
 
-/usr/local/bin/cmake -D CMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+cmake -D CMAKE_BUILD_WITH_INSTALL_RPATH=ON \
     -D CMAKE_TOOLCHAIN_FILE=${NDK_ROOT}/build/cmake/android.toolchain.cmake \
     -D ANDROID_NDK="${NDK_ROOT}" \
     -D ANDROID_NATIVE_API_LEVEL=${API_LEVEL} \

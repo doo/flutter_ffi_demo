@@ -41,24 +41,31 @@ class FixedSizeFinderConfig extends FinderConfig {
 class ScanbotCameraWidget extends StatefulWidget {
   CameraController controller;
 
-  FrameHandler? detectHandler;
-  FinderConfig? finderConfig;
+  final FrameHandler? detectHandler;
+  final FinderConfig? finderConfig;
+  final Widget? overlay;
 
   ScanbotCameraWidget(Key key, this.controller,
-      {this.detectHandler, this.finderConfig})
+      {this.detectHandler, this.finderConfig, this.overlay})
       : super(key: key);
 
   @override
-  _ScanbotCameraWidgetState createState() =>
-      _ScanbotCameraWidgetState(controller, detectHandler, finderConfig);
+  _ScanbotCameraWidgetState createState() => _ScanbotCameraWidgetState(
+        controller,
+        detectHandler,
+        finderConfig,
+        overlay,
+      );
 }
 
 class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
   CameraController controller;
   FrameHandler? detectHandler;
   FinderConfig? finder;
+  final Widget? overlay;
 
-  _ScanbotCameraWidgetState(this.controller, this.detectHandler, this.finder);
+  _ScanbotCameraWidgetState(
+      this.controller, this.detectHandler, this.finder, this.overlay);
 
   bool _isDetecting = false;
   bool _initialised = false;
@@ -75,7 +82,6 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
         return;
       }
       if (detectHandler != null) {
-
         controller.startImageStream((image) {
           if (!_isDetecting && this.mounted) {
             callFrameDetection(image, finder);
@@ -89,8 +95,7 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
     try {
       _isDetecting = true;
       Rect? roi;
-      const rotation =
-          90; // here is degrees of how frame that comes from the camera is differs from device rotation clockwise
+      const rotation = 90; // here is degrees of how frame that comes from the camera is differs from device rotation clockwise
       // need to be calculated properly, but it doesnt come from camera plugin
       if (finder is AspectRatioFinderConfig) {
         roi = calculateRoiFromAspectRatio(image, finder, rotation);
@@ -145,22 +150,25 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
 
     // to prevent scaling down, invert the value
     if (scale < 1) scale = 1 / scale;
-    Widget overlay = Container();
+    Widget debugOverlay = Container();
     final config = finder;
     if (config is AspectRatioFinderConfig && config.debug) {
-      overlay = getAspectRatioDebugOverlay(size, config);
+      debugOverlay = getAspectRatioDebugOverlay(size, config);
     }
-    return Stack(
-      children: [
-        Transform.scale(
-          scale: scale,
-          child: Center(
-            child: CameraPreview(controller),
+
+    var previewAspectRatio = 1 / camera.aspectRatio;
+    print("preview aspect ratio ${previewAspectRatio}");
+    return Stack(children: [
+      Center(child: CameraPreview(controller)),
+      Center(
+        child: AspectRatio(
+          aspectRatio: previewAspectRatio,
+          child: Stack(
+            children: [debugOverlay, overlay ?? Container()],
           ),
         ),
-        overlay
-      ],
-    );
+      )
+    ]);
   }
 
   Widget getAspectRatioDebugOverlay(
@@ -171,7 +179,7 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
       child: AspectRatio(
         aspectRatio: config.aspectRatio,
         child: Container(
-          color: Colors.black.withAlpha(50),
+          color: Colors.blue.withAlpha(50),
         ),
       ),
     );

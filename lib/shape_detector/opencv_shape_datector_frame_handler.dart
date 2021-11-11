@@ -19,6 +19,7 @@ class OpenCvFramesHandler extends FrameHandler<ProcessingResult> {
   @override
   Future<void> detect(CameraImage image, Rect? roi, int rotation) async {
     final ProcessingResult result;
+    print("frame aspect ratio ${image.width/image.height}");
     if (roi != null) {
       result = await frameProcessor.processFrameInRoi(image, rotation, roi);
     } else {

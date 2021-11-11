@@ -11,14 +11,18 @@ import '../camera_preview.dart';
 class FrameLiveProcessing<T> extends StatefulWidget {
   final FrameHandler<T> handler;
   final AspectRatioFinderConfig? aspectRatioFinderConfig;
+  final Widget? overlay;
 
   const FrameLiveProcessing(
-      {Key? key, required this.handler, this.aspectRatioFinderConfig})
+      {Key? key,
+      required this.handler,
+      this.aspectRatioFinderConfig,
+      this.overlay})
       : super(key: key);
 
   @override
   _FrameLiveProcessingState createState() =>
-      _FrameLiveProcessingState(handler, aspectRatioFinderConfig);
+      _FrameLiveProcessingState(handler, aspectRatioFinderConfig, overlay);
 }
 
 class _FrameLiveProcessingState<T> extends State<FrameLiveProcessing> {
@@ -26,8 +30,10 @@ class _FrameLiveProcessingState<T> extends State<FrameLiveProcessing> {
   bool permissionGranted = false;
   CameraController? controller;
   AspectRatioFinderConfig? aspectRatioFinderConfig;
+  final Widget? overlay;
 
-  _FrameLiveProcessingState(this.handler, this.aspectRatioFinderConfig);
+  _FrameLiveProcessingState(
+      this.handler, this.aspectRatioFinderConfig, this.overlay);
 
   @override
   void initState() {
@@ -68,14 +74,20 @@ class _FrameLiveProcessingState<T> extends State<FrameLiveProcessing> {
           if (data != null) {
             final cameraData = data[0];
             if (cameraData != null) {
-              controller ??= CameraController(
-                  cameraData, ResolutionPreset.max,
+              var resolutionPreset = ResolutionPreset.max;
+              if (Platform.isIOS) {
+                resolutionPreset = ResolutionPreset.medium;
+              }
+              controller ??= CameraController(cameraData, resolutionPreset,
                   imageFormatGroup: ImageFormatGroup.yuv420);
 
-              return ScanbotCameraWidget(const Key('Camera'), controller!,
-                 // finderConfig:
-                 // AspectRatioFinderConfig(width: 8, height: 4, debug: true),
-                  detectHandler: handler);
+              return ScanbotCameraWidget(
+                const Key('Camera'),
+                controller!,
+                finderConfig: aspectRatioFinderConfig,
+                detectHandler: handler,
+                overlay: overlay,
+              );
             } else {
               return Container();
             }

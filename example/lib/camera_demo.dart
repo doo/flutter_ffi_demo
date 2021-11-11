@@ -51,18 +51,22 @@ class _OpenCvCameraDemoState extends State<OpenCvCameraDemo> {
       body = Stack(
         children: [
           FrameLiveProcessing<ProcessingResult>(
-              handler: OpenCvFramesHandler(
-                faceDetector,
-                detectionResultStreamController,
-              ),
-              aspectRatioFinderConfig: null
-              //  AspectRatioFinderConfig(width: 1, height: 1, debug: true),
-              ),
-          AspectRatio(aspectRatio: 3 / 4, child: resultOverlay)
+            overlay: resultOverlay,
+            handler: OpenCvFramesHandler(
+              faceDetector,
+              detectionResultStreamController,
+            ),
+            aspectRatioFinderConfig: null,
+            //  AspectRatioFinderConfig(width: 1, height: 1, debug: true),
+          ),
         ],
       );
     }
-    return body;
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("OpenCv Demo"),
+        ),
+        body: body);
   }
 
   @override
@@ -127,6 +131,7 @@ class ShapesPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+   // canvas.drawPaint(Paint()..color = Colors.green.withAlpha(50));
     var _shapes = notifier.value;
     for (var element in _shapes) {
       switch (element.figureType) {

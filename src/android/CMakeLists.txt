@@ -1,14 +1,13 @@
 project(flutter_ffi)
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.21)
 
 #CONFIGURATION
 
-set(OPENCV_VERSION 4.5.0)
+set(OPENCV_VERSION 4.4.0)
 
 message("api level ${ANDROID_PLATFORM}")
 message("ndk ${ANDROID_NDK}")
 message("abi ${ANDROID_ABI}")
-message("target ${TARGET}")
 
 #Paths
 set(openssl ${CMAKE_CURRENT_SOURCE_DIR}/openssl)

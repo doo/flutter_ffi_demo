@@ -9,6 +9,7 @@ profile
 
 DerivedData/
 build/
+flutter_ffi.framework/
 GeneratedPluginRegistrant.h
 GeneratedPluginRegistrant.m
 

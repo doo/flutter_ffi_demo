@@ -4,6 +4,8 @@ import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:ffi/ffi.dart';
+import 'package:flutter/services.dart';
+
 import 'ffi/ffi_lookup.dart';
 import 'models/image.dart';
 
@@ -29,8 +31,7 @@ extension CameraImageExtention on CameraImage {
 
   Pointer<SdkImage> toSdkImagePointer(int rotation) {
     var pointer = createImageFrame();
-    final image = pointer
-        .ref;
+    final image = pointer.ref;
     image.width = width;
     image.height = height;
     image.rotation = rotation;
@@ -100,7 +101,6 @@ extension CameraImageExtention on CameraImage {
       sdkPlane0.length = pLength0;
       sdkPlane0.planeData = p0;
       image.plane = sdkPlanePointer0;
-
     }
     return pointer;
   }
@@ -122,8 +122,33 @@ extension SdkImagePoinerExtention on Pointer<SdkImage> {
 }
 
 extension ByteDataToFile on ByteData {
-    Future<void> save(File file) async{
-      List<int> bytes = buffer.asUint8List(offsetInBytes, lengthInBytes);
-      await file.writeAsBytes(bytes);
-    }
+  Future<void> save(File file) async {
+    List<int> bytes = buffer.asUint8List(offsetInBytes, lengthInBytes);
+    await file.writeAsBytes(bytes);
+  }
+}
+
+extension CameraControllerExtention on CameraController {
+  bool isLandscape() {
+    return [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]
+        .contains(_getApplicableOrientation());
+  }
+
+  int getImageRotation() {
+    Map<DeviceOrientation, int> turns = {
+      DeviceOrientation.portraitUp: 90,
+      DeviceOrientation.landscapeRight: 180,
+      DeviceOrientation.portraitDown: 270,
+      DeviceOrientation.landscapeLeft: 0,
+    };
+    return turns[_getApplicableOrientation()]!;
+  }
+
+  DeviceOrientation _getApplicableOrientation() {
+    return value.isRecordingVideo
+        ? value.recordingOrientation!
+        : (value.previewPauseOrientation ??
+            value.lockedCaptureOrientation ??
+            value.deviceOrientation);
+  }
 }

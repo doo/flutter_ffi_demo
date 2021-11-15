@@ -95,23 +95,8 @@ class OpenCvShapeDetector {
     }
   }
 
-  Future<ProcessingResult> processFrame(CameraImage image, int rotation) async {
-    //some checks to ignore problems with flutter camera plugin
-    if (!image.isEmpty() && scanner != ffi.nullptr) {
-      return compute(
-          processFrameAsync,
-          _FrameData(
-            scanner.address,
-            image,
-            rotation,
-          ));
-    } else {
-      return ProcessingResult([]);
-    }
-  }
-
-  Future<ProcessingResult> processFrameInRoi(
-      CameraImage image, int rotation, Rect roi) async {
+  Future<ProcessingResult> processFrame(
+      CameraImage image, int rotation, Rect? roi) async {
     //some checks to ignore problems with flutter camera plugin
     if (!image.isEmpty() && scanner != ffi.nullptr) {
       return compute(processFrameAsync,

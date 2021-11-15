@@ -8,12 +8,12 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../camera_preview.dart';
 
-class FrameLiveProcessing<T> extends StatefulWidget {
+class ScanbotLiveDetection<T> extends StatefulWidget {
   final FrameHandler<T> handler;
   final AspectRatioFinderConfig? aspectRatioFinderConfig;
   final Widget? overlay;
 
-  const FrameLiveProcessing(
+  const ScanbotLiveDetection(
       {Key? key,
       required this.handler,
       this.aspectRatioFinderConfig,
@@ -21,29 +21,23 @@ class FrameLiveProcessing<T> extends StatefulWidget {
       : super(key: key);
 
   @override
-  _FrameLiveProcessingState createState() =>
-      _FrameLiveProcessingState(handler, aspectRatioFinderConfig, overlay);
+  _ScanbotLiveDetectionState createState() =>
+      _ScanbotLiveDetectionState(handler, aspectRatioFinderConfig, overlay);
 }
 
-class _FrameLiveProcessingState<T> extends State<FrameLiveProcessing> {
+class _ScanbotLiveDetectionState<T> extends State<ScanbotLiveDetection> {
   final FrameHandler<T> handler;
   bool permissionGranted = false;
   CameraController? controller;
   AspectRatioFinderConfig? aspectRatioFinderConfig;
   final Widget? overlay;
 
-  _FrameLiveProcessingState(
+  _ScanbotLiveDetectionState(
       this.handler, this.aspectRatioFinderConfig, this.overlay);
 
   @override
   void initState() {
-    if (Platform.isAndroid) {
-      checkPermission();
-    } else {
-      setState(() {
-        permissionGranted = true;
-      });
-    }
+    checkPermission();
     super.initState();
   }
 

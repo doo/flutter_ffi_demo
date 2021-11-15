@@ -20,11 +20,7 @@ class OpenCvFramesHandler extends FrameHandler<ProcessingResult> {
   Future<void> detect(CameraImage image, Rect? roi, int rotation) async {
     final ProcessingResult result;
     print("frame aspect ratio ${image.width/image.height}");
-    if (roi != null) {
-      result = await frameProcessor.processFrameInRoi(image, rotation, roi);
-    } else {
-      result = await frameProcessor.processFrame(image, rotation);
-    }
+    result = await frameProcessor.processFrame(image, rotation, roi);
     detectionResultStreamController.add(result);
   }
 }

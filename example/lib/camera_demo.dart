@@ -44,22 +44,16 @@ class _OpenCvCameraDemoState extends State<OpenCvCameraDemo> {
 
   @override
   Widget build(BuildContext context) {
-    var resultOverlay =
-        ShapesResultOverlay(detectionResultStreamController.stream);
     Widget body = Container();
     if (scannerIsInited) {
-      body = Stack(
-        children: [
-          FrameLiveProcessing<ProcessingResult>(
-            overlay: resultOverlay,
-            handler: OpenCvFramesHandler(
-              faceDetector,
-              detectionResultStreamController,
-            ),
-            aspectRatioFinderConfig: null,
-            //  AspectRatioFinderConfig(width: 1, height: 1, debug: true),
-          ),
-        ],
+      body = ScanbotLiveDetection<ProcessingResult>(
+        overlay: ShapesResultOverlay(detectionResultStreamController.stream),// Container(color: Colors.amberAccent.withAlpha(150),),
+        handler: OpenCvFramesHandler(
+          faceDetector,
+          detectionResultStreamController,
+        ),
+        aspectRatioFinderConfig: null,
+        //  AspectRatioFinderConfig(width: 1, height: 1, debug: true),
       );
     }
     return Scaffold(
@@ -131,7 +125,9 @@ class ShapesPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-   // canvas.drawPaint(Paint()..color = Colors.green.withAlpha(50));
+    //canvas.drawRect(
+    //    Rect.fromPoints(Offset(0, 0), Offset(size.width, size.height)),
+    //    Paint()..color = Colors.black.withAlpha(150));
     var _shapes = notifier.value;
     for (var element in _shapes) {
       switch (element.figureType) {

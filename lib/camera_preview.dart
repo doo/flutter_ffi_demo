@@ -90,12 +90,17 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
       }
     });
   }
-
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
   void callFrameDetection(CameraImage image, FinderConfig? finder) async {
     try {
       _isDetecting = true;
       Rect? roi;
-      const rotation = 90; // here is degrees of how frame that comes from the camera is differs from device rotation clockwise
+      const rotation =
+          90; // here is degrees of how frame that comes from the camera is differs from device rotation clockwise
       // need to be calculated properly, but it doesnt come from camera plugin
       if (finder is AspectRatioFinderConfig) {
         roi = calculateRoiFromAspectRatio(image, finder, rotation);
@@ -128,12 +133,6 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
   }
 
   @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     if (!_initialised) {
       return Container();
@@ -156,19 +155,16 @@ class _ScanbotCameraWidgetState extends State<ScanbotCameraWidget> {
       debugOverlay = getAspectRatioDebugOverlay(size, config);
     }
 
-    var previewAspectRatio = 1 / camera.aspectRatio;
-    print("preview aspect ratio ${previewAspectRatio}");
-    return Stack(children: [
-      Center(child: CameraPreview(controller)),
-      Center(
-        child: AspectRatio(
-          aspectRatio: previewAspectRatio,
-          child: Stack(
-            children: [debugOverlay, overlay ?? Container()],
-          ),
-        ),
-      )
-    ]);
+    var combinedOverlay = Center(
+      child: Stack(
+        children: [debugOverlay, overlay ?? Container()],
+      ),
+    );
+    return Center(
+        child: CameraPreview(
+      controller,
+      child: combinedOverlay,
+    ));
   }
 
   Widget getAspectRatioDebugOverlay(

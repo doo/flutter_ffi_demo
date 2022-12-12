@@ -1,6 +1,10 @@
 # Readme
-This is example project of how to use opencv with flutter::ffi utilities
-#Preparation
+This is example project of how to use opencv with flutter::ffi utilities based on the tutorial in the blog post:
+
+["Implementing a Flutter plugin with native OpenCV support via dart::ffi – Part 1"](https://scanbot.io/blog/implementing-a-flutter-plugin-with-native-opencv-support-via-dartffi-part-1-2/)
+
+["Implementing a Flutter plugin with native OpenCV support via dart::ffi – Part 2"](https://scanbot.io/blog/implementing-a-flutter-plugin-with-native-opencv-support-via-dartffi-part-2-2/)
+## Preparation
 ### Install the latest cmake (minimum version is 3.21.1)
 ```bash
 brew install cmake
